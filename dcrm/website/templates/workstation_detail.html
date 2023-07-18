@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+
+<div class="card">
+  <div class="card-header"><strong>
+    	{{ employee_detail.name }}</strong>
+  </div>
+  <div class="card-body">
+
+    <p class="card-text">
+    <strong>Current State: </strong>{{ employee_detail.current_state }}</p>
+
+    <p class="card-text">
+    <strong>Role: </strong>{{ employee_detail.role }}
+    </p>
+
+    <p class="card-text">
+    <strong>Name: </strong>{{ employee_detail.name }}</p>
+
+    <p class="card-text">
+    <strong>Mobile Number: </strong>{{ employee_detail.mobile_number }}</p>
+
+    <p class="card-text">
+    <strong>Email: </strong>{{ employee_detail.email }}</p>
+
+    <p class="card-text">
+    <strong>Birth Date: </strong>{{ employee_detail.birth_date }}</p>
+
+    <p class="card-text">
+    <strong>Localization: </strong>{{ employee_detail.localization }}</p>
+
+    <p class="card-text">
+    <strong>ID: </strong>{{ employee_detail.employee_id }}</p>
+  </div>
+</div>
+
+<br/><br/>
+<a href="{% url 'employee' %}" class="btn btn-secondary">Back</a>
+
+<a href="{% url 'delete_employee' employee_detail.employee_id %}" class="btn btn-danger">Delete</a>
+
+<a href="{% url 'update_record' employee_detail.employee_id %}" class="btn btn-secondary">Update Employee</a>
+		
+
+{% endblock %}
