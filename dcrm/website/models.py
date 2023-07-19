@@ -42,21 +42,28 @@ class Employee(models.Model):
     birth_date = models.DateField()
     localization = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
+
 class WorkStation(models.Model):
     work_station_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
     description = models.TextField()
     qrcode = models.ImageField(null=True, blank=True, upload_to="images/" )
 
+    def __str__(self):
+        return self.name
+
 class Project(models.Model):
     project_id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=255)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     work_station = models.ForeignKey(WorkStation, on_delete=models.CASCADE)
     assistent_remote = models.CharField(max_length=255)
     start_date = models.DateField()
     end_date = models.DateField()
-    tutorial = models.TextField()
-    name = models.CharField(max_length=255)
+    tutorial = models.FileField(upload_to='project_videos/', null=True, blank=True)
     description = models.TextField()
 
 class Priority(models.Model):
@@ -64,11 +71,6 @@ class Priority(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField()
     qrcode = models.TextField(null=True)
-
-class Position(models.Model):
-    position_id = models.IntegerField(primary_key=True)
-    hologram_position = models.CharField(max_length=255)
-    arrow_position = models.CharField(max_length=255)
 
 class Detection(models.Model):
     detection_id = models.IntegerField(primary_key=True)
@@ -81,6 +83,15 @@ class Metadata(models.Model):
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
 
+class Hologram(models.Model):
+    id = models.AutoField(primary_key=True)
+    position = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    obj = models.FileField(upload_to='holograms/', null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
 class Task(models.Model):
     task_id = models.IntegerField(primary_key=True)
     priority = models.ForeignKey(Priority, on_delete=models.CASCADE)
@@ -88,6 +99,7 @@ class Task(models.Model):
     metadata = models.ForeignKey(Metadata, on_delete=models.CASCADE)
     detection = models.ForeignKey(Detection, on_delete=models.CASCADE)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    position = models.ForeignKey(Position, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     completed = models.BooleanField()
+    holograms = models.ManyToManyField(Hologram, blank=True)
+

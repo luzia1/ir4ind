@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+{% if user.is_authenticated %}
+<a href="{% url 'add_hologram' %}" class="btn btn-secondary">Add Hologram</a>
+<br/><br/>
+<table class="table table-striped table-hover table-bordered">
+  <thead class="table-dark">
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Name</th>
+      <th scope="col">Description</th>
+      <th scope="col">QRCode</th>
+      <th scope="col">3D Model</th>  {# Add a new column for 3D model viewer #}
+    </tr>
+  </thead>
+  <tbody>
+
+    
+{% if holograms %}
+  {% for hologram in holograms %}
+    <tr>
+      <td>{{ hologram.name }}</td>
+      <td>{{ workstation.description }}</td>
+      <td>
+        <img src="/media/{{ workstation.qrcode }}" alt="aaa" width="150" height="150">
+      </td>
+      <td>  {# Create a new column for the 3D model viewer container #}
+        <div class="model-viewer" data-model-url="/media/{{ hologram.url }}"></div>
+      </td>
+    </tr>
+  {% endfor %}
+{% endif %}
+
+{% else %}
+<div class="col-md-6 offset-md-3">
+<h1>Login</h1>
+    <br/>
+    <form method="POST" action="{% url 'employee' %}">
+        {% csrf_token %}
+        <form>
+            <div class="mb-3">
+              <input type="text" class="form-control" name="username" placeholder="Username" required>
+            </div>
+            <br/>
+            <div class="mb-3">
+              <input type="password" class="form-control" name="password" placeholder="Password" required>
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-secondary">Login</button>
+          </form>
+    </form>
+</div>
+
+{% endif %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  // Get all elements with class 'model-viewer'
+  const modelViewers = document.querySelectorAll('.model-viewer');
+
+  // Create a Three.js scene for each model viewer
+  modelViewers.forEach((viewer) => {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, viewer.offsetWidth / viewer.offsetHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(viewer.offsetWidth, viewer.offsetHeight);
+    viewer.appendChild(renderer.domElement);
+
+    const loader = new THREE.OBJLoader();
+    const modelUrl = viewer.dataset.modelUrl;  // Get the data-model-url from the viewer's data attribute
+
+    loader.load(modelUrl, function (object) {
+      scene.add(object);
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  });
+</script>
+
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Record, CurrentState, Role, Employee, WorkStation
+from .models import Record, CurrentState, Role, Employee, WorkStation, Project, Priority, Detection, Metadata, Task, Hologram
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))
@@ -66,3 +66,59 @@ class AddStationForm(forms.ModelForm):
         model = WorkStation
         exclude = ("user",)
         
+
+# Create Add Project Form
+class AddProjectForm(forms.ModelForm):
+    project_id = forms.IntegerField(required=True, widget=forms.widgets.TextInput(attrs={"class": "form-control"}), label="Project ID")
+    name = forms.CharField(max_length=255, widget=forms.widgets.TextInput(attrs={"class": "form-control"}), label="Name")
+    employee = forms.ModelChoiceField(queryset=Employee.objects.filter(role__role_id=1), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Responsible Employee")
+    assistent_remote = forms.CharField(max_length=255, widget=forms.widgets.TextInput(attrs={"class": "form-control"}), label="Email for Remote Assistant")
+    work_station = forms.ModelChoiceField(queryset=WorkStation.objects.all(), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Work Station")
+    start_date = forms.DateField(widget=forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}), label="Start Date")
+    end_date = forms.DateField(widget=forms.widgets.DateInput(attrs={"class": "form-control", "type": "date"}), label="End Date")
+    tutorial = forms.FileField(required=False, label="Tutorial Video", widget=forms.ClearableFileInput(attrs={"class": "form-control"}))
+    description = forms.CharField(widget=forms.widgets.Textarea(attrs={"class": "form-control"}), label="Description")
+
+    class Meta:
+        model = Project
+        fields = "__all__"  # Use this instead of exclude if you want all fields from the model
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+
+        if start_date and end_date and start_date > end_date:
+            raise forms.ValidationError("Start date must be before end date.")
+
+        return cleaned_data
+    
+# Create Add Task Form
+
+
+class AddTaskForm(forms.ModelForm):
+    task_id = forms.IntegerField(required=True, widget=forms.widgets.TextInput(attrs={"class": "form-control"}), label="Task ID")
+    priority = forms.ModelChoiceField(queryset=Priority.objects.all(), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Priority")
+    project = forms.ModelChoiceField(queryset=Project.objects.all(), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Project")
+    metadata = forms.ModelChoiceField(queryset=Metadata.objects.all(), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Metadata")
+    detection = forms.ModelChoiceField(queryset=Detection.objects.all(), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Detection")
+    employee = forms.ModelChoiceField(queryset=Employee.objects.all(), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Employee")
+    name = forms.CharField(max_length=255, widget=forms.widgets.TextInput(attrs={"class": "form-control"}), label="Name")
+    completed = forms.BooleanField(required=False, widget=forms.widgets.CheckboxInput(attrs={"class": "form-check-input"}), label="Completed")
+    holograms = forms.ModelMultipleChoiceField(
+        queryset=Hologram.objects.all(),
+        widget=forms.SelectMultiple(attrs={'class': 'form-control'}),
+        required=False
+    )
+    class Meta:
+        model = Task
+        fields = "__all__"
+      
+class AddHologramForm(forms.ModelForm):
+ class Meta:
+        model = Hologram
+        exclude = ('position',)  # Exclude the 'position' field from the form fields
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+ url = forms.FileField(widget=forms.FileInput(attrs={'class': 'form-control'}), label="Upload File")
