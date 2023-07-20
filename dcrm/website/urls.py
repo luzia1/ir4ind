@@ -30,5 +30,9 @@ urlpatterns = [
     #TASK
     path('task/', views.task, name='task'),
     path('add_task/', views.add_task, name='add_task'),
+    path('task/<int:pk>/', views.task_detail, name='task_detail'),
+    #DASHBOARD
+    path('dashboard/', views.dashboard, name='dashboard'),
+    
  
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

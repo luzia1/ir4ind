@@ -66,19 +66,27 @@ class Project(models.Model):
     tutorial = models.FileField(upload_to='project_videos/', null=True, blank=True)
     description = models.TextField()
 
+    def __str__(self):
+        return self.name
+
 class Priority(models.Model):
     priority_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
-    description = models.TextField()
-    qrcode = models.TextField(null=True)
+
+    def __str__(self):
+        return self.name
 
 class Detection(models.Model):
     detection_id = models.IntegerField(primary_key=True)
     classname = models.CharField(max_length=255)
     detected = models.BooleanField()
+    
+    def __str__(self):
+        return self.classname
 
 class Metadata(models.Model):
     metadata_id = models.IntegerField(primary_key=True)
+    task_id = models.OneToOneField('Metadata', null=True, blank=True, on_delete=models.SET_NULL)
     request_count = models.IntegerField(null=True)
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
@@ -94,12 +102,11 @@ class Hologram(models.Model):
 
 class Task(models.Model):
     task_id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=255)
     priority = models.ForeignKey(Priority, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    metadata = models.ForeignKey(Metadata, on_delete=models.CASCADE)
     detection = models.ForeignKey(Detection, on_delete=models.CASCADE)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    completed = models.BooleanField()
+    completed = models.BooleanField(default=False)
     holograms = models.ManyToManyField(Hologram, blank=True)
 

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SignUpForm, AddRecordForm, AddStationForm, AddProjectForm, AddTaskForm, AddHologramForm
-from .models import Record, Employee, WorkStation, Project, Detection, Task, Hologram
+from .models import Record, Employee, WorkStation, Project, Detection, Task, Hologram, Metadata
 
 # Create your views here.
 def employee(request):
@@ -234,14 +234,15 @@ def add_task(request):
 	if request.user.is_authenticated:
 		if request.method == "POST":
 			if form.is_valid():
+				
 				add_task = form.save()
-				messages.success(request, "Record Added...")
+				messages.success(request, "Task Added...")
 				return redirect('task')
 		return render(request, 'add_task.html', {'form':form})
 	else:
 		messages.success(request, "You Must Be Logged In...")
-		return redirect('task')
-
+		return redirect('hologram')
+	
 def task(request):
     tasks = Task.objects.all()
 
@@ -261,7 +262,15 @@ def task(request):
     else:
         return render(request, 'task.html', {'tasks':tasks})
     
-
+def task_detail(request, pk):
+    if request.user.is_authenticated:
+        #Look up records
+        task_detail = Task.objects.get(task_id=pk)
+        return render(request, 'task_detail.html', {'task_detail':task_detail})
+    else:
+        messages.success(request, "You Have Be Logged to see that page!")
+        return redirect('task')
+    
 #HOLOGRAMA VIEWS
 
 def add_hologram(request):
@@ -296,4 +305,6 @@ def hologram(request):
             return redirect('hologram')
     else:
         return render(request, 'hologram.html', {'holograms':holograms})
-    
+
+def dashboard(request):
+	return render(request, 'dashboard.html')

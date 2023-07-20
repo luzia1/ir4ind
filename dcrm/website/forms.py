@@ -98,20 +98,20 @@ class AddProjectForm(forms.ModelForm):
 
 class AddTaskForm(forms.ModelForm):
     task_id = forms.IntegerField(required=True, widget=forms.widgets.TextInput(attrs={"class": "form-control"}), label="Task ID")
+    name = forms.CharField(max_length=255, widget=forms.widgets.TextInput(attrs={"class": "form-control"}), label="Name")
     priority = forms.ModelChoiceField(queryset=Priority.objects.all(), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Priority")
     project = forms.ModelChoiceField(queryset=Project.objects.all(), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Project")
-    metadata = forms.ModelChoiceField(queryset=Metadata.objects.all(), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Metadata")
     detection = forms.ModelChoiceField(queryset=Detection.objects.all(), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Detection")
-    employee = forms.ModelChoiceField(queryset=Employee.objects.all(), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Employee")
-    name = forms.CharField(max_length=255, widget=forms.widgets.TextInput(attrs={"class": "form-control"}), label="Name")
-    completed = forms.BooleanField(required=False, widget=forms.widgets.CheckboxInput(attrs={"class": "form-check-input"}), label="Completed")
+    employee = forms.ModelChoiceField(queryset=Employee.objects.filter(role__role_id=2), widget=forms.widgets.Select(attrs={"class": "form-control"}), label="Employee")
     holograms = forms.ModelMultipleChoiceField(
         queryset=Hologram.objects.all(),
         widget=forms.SelectMultiple(attrs={'class': 'form-control'}),
         required=False
     )
+
     class Meta:
         model = Task
+        exclude = ('completed',)
         fields = "__all__"
       
 class AddHologramForm(forms.ModelForm):
@@ -121,4 +121,4 @@ class AddHologramForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
         }
- url = forms.FileField(widget=forms.FileInput(attrs={'class': 'form-control'}), label="Upload File")
+ obj = forms.FileField(widget=forms.FileInput(attrs={'class': 'form-control'}), label="Upload File")

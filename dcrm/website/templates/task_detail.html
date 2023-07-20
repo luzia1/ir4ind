@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="card">
+  <div class="card-header"><strong>
+    	{{ project_detail.name }}</strong>
+  </div>
+  <div class="card-body">
+    <p class="card-text">
+        <strong>ID: </strong>{{ project_detail.project_id }}</p>
+
+    <p class="card-text">
+    <strong>Description: </strong>{{ project_detail.description }}</p>
+
+    <p class="card-text">
+    <strong>Responsible Employee: </strong>{{ project_detail.employee }}
+    </p>
+
+    <p class="card-text">
+    <strong>Email for Assistent Remote: </strong>{{ project_detail.assistent_remote }}</p>
+
+    <p class="card-text">
+    <strong>Workstation: </strong>{{ project_detail.work_station }}</p>
+
+    <p class="card-text">
+    <strong>Start Date: </strong>{{ project_detail.start_date }}</p>
+
+    <p class="card-text">
+    <strong>End Date: </strong>{{ project_detail.end_date }}</p>
+
+    <p class="card-text">
+    <strong>Tutorial: </strong></p><video width="320" height="240" controls><source src="{{ project_detail.tutorial.url }}" type="video/mp4">
+        Your browser does not support the video tag.</video>
+
+  </div>
+</div>
+
+<br/><br/>
+<a href="{% url 'project' %}" class="btn btn-secondary">Back</a>
+
+<a href="{% url 'delete_project' project_detail.project_id %}" class="btn btn-danger">Delete</a>
+
+<a href="{% url 'update_project' project_detail.project_id %}" class="btn btn-secondary">Update Project</a>
+		
+
+{% endblock %}
